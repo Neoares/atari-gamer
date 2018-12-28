@@ -5,35 +5,8 @@ import gym
 from gym import wrappers, logger
 
 import numpy as np
-import random
 
-
-class RandomAgent(object):
-    """The world's simplest agent!"""
-    def __init__(self, action_space, random=False):
-        self.action_space = action_space
-        self.epsilon = 0.3
-        self.counts = np.zeros(self.action_space.n)
-        self.values = np.zeros(self.action_space.n)
-        self.random = random
-
-    def update_counts(self, action):
-        self.counts[action] += 1
-
-    def update_values(self, action, reward):
-        value = self.values[action]
-        n = self.counts[action]
-        self.values[action] = value*(n-1)/n + reward/n
-
-    def act(self):
-        if not self.random and random.random() > self.epsilon:
-            argmax = np.argwhere(self.values == np.amax(self.values)).ravel()
-            new_action = argmax[random.randint(0, len(argmax)-1)]
-        else:
-            new_action = self.action_space.sample()
-        self.update_counts(new_action)
-
-        return new_action
+from agent import Agent
 
 
 if __name__ == '__main__':
@@ -43,7 +16,7 @@ if __name__ == '__main__':
 
     env = gym.make(args.env_id)
     env.seed(0)
-    agent = RandomAgent(env.action_space, random=False)
+    agent = Agent(env.action_space, random=False)
 
     episode_count = 10
     reward = 0
@@ -55,16 +28,23 @@ if __name__ == '__main__':
         ob = env.reset()
         agent.epsilon = max(1/(i+1), 0.1)
         while True:
+            # action = agent.act(ob, reward, done)
             action = agent.act()
             ob, reward, done, _ = env.step(action)
             env.render()
             agent.update_values(action, reward)
-            total_score[i] += reward
+            #   print(reward)
+            if reward != 0:
+                total_score[i] += reward
+                #print("new action:", action)
+                #print(agent.counts)
+                #print(agent.values)
             if done:
                 print(agent.counts)
                 print(agent.values)
                 print("final score:", total_score)
                 break
+            #input()
     print("TOTAL SCORES:")
     print(total_score)
 
