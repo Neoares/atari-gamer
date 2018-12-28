@@ -3,7 +3,7 @@ import argparse
 import gym
 import numpy as np
 
-from src.agent import Agent, DQNAgent
+from src.agent import Agent
 
 
 if __name__ == '__main__':
