@@ -1,8 +1,8 @@
 import numpy as np
 import random
 
+
 class Agent(object):
-    """The world's simplest agent!"""
     def __init__(self, action_space, random=False):
         self.action_space = action_space
         self.epsilon = 0.3

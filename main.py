@@ -1,12 +1,9 @@
 import argparse
-import sys
 
 import gym
-from gym import wrappers, logger
-
 import numpy as np
 
-from agent import Agent
+from src.agent import Agent, DQNAgent
 
 
 if __name__ == '__main__':
@@ -19,8 +16,6 @@ if __name__ == '__main__':
     agent = Agent(env.action_space, random=False)
 
     episode_count = 10
-    reward = 0
-    done = False
 
     total_score = np.zeros(episode_count)
 
