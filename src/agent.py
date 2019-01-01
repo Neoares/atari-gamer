@@ -22,9 +22,6 @@ class Agent(object):
     def update_values(self, action, reward):
         value = self.values[action]
         n = self.counts[action]
-        #print("n:", n)
-        #print(value*(n-1))
-        #print(reward/n)
         self.values[action] = value*(n-1)/n + reward/n
 
     def act(self):
