@@ -8,32 +8,31 @@ from keras.optimizers import Adam
 
 
 class Agent(object):
-    def __init__(self, action_space, random=False):
-        self.action_space = action_space
-        self.epsilon = 0.3
-        self.counts = np.zeros(self.action_space.n)
-        self.values = np.zeros(self.action_space.n)
-        #self.Q = np.zeros()
-        self.random = random
+    def __init__(self, state_size, action_size, prod=False):
+        self.state_size = state_size
+        self.action_size = action_size
+        self.prod = prod
 
-    def update_counts(self, action):
-        self.counts[action] += 1
+        self.alpha = 0.001
 
-    def update_values(self, action, reward):
-        value = self.values[action]
-        n = self.counts[action]
-        self.values[action] = value*(n-1)/n + reward/n
+        self.gamma = 0.99
+        self.gamma_decay = 1
+        self.gamma_min = 0.1
 
-    def act(self):
-        if not self.random and random.random() > self.epsilon:
-            argmax = np.argwhere(self.values == np.amax(self.values)).ravel()
-            new_action = argmax[random.randint(0, len(argmax)-1)]
+        self.epsilon = 1
+        self.epsilon_min = 0.1
+        self.epsilon_decay = .9995
+
+        self.Q_table = np.zeros((state_size, action_size))
+
+    def update_q_table(self, state, action, reward, next_state, done):
+        self.Q_table[state, action] = self.Q_table[state, action] + self.alpha * (reward + self.gamma * np.max(self.Q_table[next_state]) - self.Q_table[state, action])
+
+    def act(self, state):
+        if self.prod or random.random() > self.epsilon:
+            return np.argmax(self.Q_table[state])
         else:
-            new_action = self.action_space.sample()
-        #print("new action:", new_action)
-        self.update_counts(new_action)
-
-        return new_action
+            return random.randrange(self.action_size)
 
 
 class DQNAgent:
