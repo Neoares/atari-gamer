@@ -1,3 +1,5 @@
 atari-py==0.1.7
 gym==0.10.9
+Keras==2.2.4
 Pillow==5.3.0
+tensorflow==1.12.0
