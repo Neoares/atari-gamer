@@ -27,11 +27,14 @@ def train(env, agent, episodes):
             total_score[i] += reward
 
             if done:
-                print("episode {}/{}, score: {}, epsilon: {:.2}".format(i, episodes, total_score[i],
-                                                                        float(agent.epsilon)))
+                if i%100 == 0:
+                    print("episode {}/{}, score: {}, epsilon: {:.2}, gamma: {:.2}, alpha: {:.2}".format(i, episodes, total_score[i],
+                            float(agent.epsilon), float(agent.gamma), float(agent.alpha)))
                 break
 
         agent.epsilon = max(agent.epsilon_min, agent.epsilon * agent.epsilon_decay)
+        agent.gamma = max(agent.gamma_min, agent.gamma * agent.gamma_decay)
+        agent.alpha = max(agent.alpha_min, agent.alpha * agent.alpha_decay)
         total_epochs += epochs
         total_penalties += penalties
 
@@ -40,11 +43,13 @@ def train(env, agent, episodes):
     print(f"Results after {episodes} episodes:")
     print(f"Average timesteps per episode: {total_epochs / episodes}")
     print(f"Average penalties per episode: {total_penalties / episodes}")
-    plt.plot(range(episodes), total_score)
+    plt.plot(range(episodes), total_score, 'bx')
     plt.show()
 
     # Close the env and write monitor result info to disk
     env.env.close()
+
+    return total_score
 
 
 if __name__ == '__main__':
@@ -56,6 +61,6 @@ if __name__ == '__main__':
     env.seed(0)
     agent = Agent(env.observation_space.n, env.action_space.n)
 
-    train(env, agent, 10000)
+    train(env, agent, 100000)
     agent.prod = True
-    train(env, agent, 1000)
+    total_score = train(env, agent, 1000)
