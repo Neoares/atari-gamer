@@ -28,7 +28,8 @@ class Agent(object):
         self.Q_table = np.zeros((state_size, action_size))
 
     def update_q_table(self, state, action, reward, next_state, done):
-        self.Q_table[state, action] = self.Q_table[state, action] + self.alpha * (reward + self.gamma * np.max(self.Q_table[next_state]) - self.Q_table[state, action])
+        if not self.prod:
+            self.Q_table[state, action] = self.Q_table[state, action] + self.alpha * (reward + self.gamma * np.max(self.Q_table[next_state]) - self.Q_table[state, action])
 
     def act(self, state):
         if self.prod or random.random() > self.epsilon:
