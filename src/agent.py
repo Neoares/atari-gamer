@@ -13,17 +13,17 @@ class Agent(object):
         self.action_size = action_size
         self.prod = prod
 
-        self.alpha = 0.1
-        self.alpha_decay = 0.99999
+        self.alpha = .5
         self.alpha_min = 0.001
+        # self.alpha_decay = 0.999999
 
         self.gamma = 0.99
-        self.gamma_decay = .99995
         self.gamma_min = 0.1
+        # self.gamma_decay = .999995
 
         self.epsilon = 1
         self.epsilon_min = 0.1
-        self.epsilon_decay = .99995
+        # self.epsilon_decay = .999995
 
         self.Q_table = np.zeros((state_size, action_size))
 

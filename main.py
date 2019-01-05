@@ -12,6 +12,10 @@ def train(env, agent, episodes):
 
     total_score = np.zeros(episodes)
 
+    epsilon_decay = 2 * (agent.epsilon - agent.epsilon_min) / episodes
+    alpha_decay = (agent.alpha - agent.alpha_min) / episodes
+    gamma_decay = (agent.gamma - agent.gamma_min) / episodes
+
     for i in range(episodes):
         state = env.reset()
         epochs, penalties = 0, 0
@@ -32,9 +36,9 @@ def train(env, agent, episodes):
                             float(agent.epsilon), float(agent.gamma), float(agent.alpha)))
                 break
 
-        agent.epsilon = max(agent.epsilon_min, agent.epsilon * agent.epsilon_decay)
-        agent.gamma = max(agent.gamma_min, agent.gamma * agent.gamma_decay)
-        agent.alpha = max(agent.alpha_min, agent.alpha * agent.alpha_decay)
+        agent.epsilon = max(agent.epsilon_min, agent.epsilon - epsilon_decay)
+        agent.alpha = max(agent.alpha_min, agent.alpha - alpha_decay)
+        agent.gamma = max(agent.gamma_min, agent.gamma - gamma_decay)
         total_epochs += epochs
         total_penalties += penalties
 
@@ -58,9 +62,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     env = gym.make(args.env_id)
-    env.seed(0)
+    env.seed(42)
     agent = Agent(env.observation_space.n, env.action_space.n)
 
-    train(env, agent, 100000)
+    train_score = train(env, agent, 100000)
     agent.prod = True
-    total_score = train(env, agent, 1000)
+    test_score = train(env, agent, 1000)
+    print("Production algorithm mean:", test_score.mean())
+    print("Last 100 games mean:", test_score[-100:].mean())
