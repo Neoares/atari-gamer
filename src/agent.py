@@ -43,39 +43,44 @@ class DQNAgent:
         self.state_size = state_size
         self.action_size = action_size
         self.memory = deque(maxlen=10000)
-        self.gamma = 0.95  # discount rate
-        self.epsilon = 1  # exploration rate (set to 1)
+
+        self.alpha = .5
+        self.alpha_min = 0.001
+
+        self.gamma = 0.99
+        self.gamma_min = 0.1
+
+        self.epsilon = 1
         self.epsilon_min = 0.1
-        self.epsilon_decay = 0.99995
-        self.learning_rate = 0.001
+
         self.model = self._build_model()
 
     def _build_model(self):
         model = Sequential()
 
-        model.add(Conv2D(32, (7, 7), padding='same', input_shape=self.state_size, activation='relu'))
-        model.add(Conv2D(32, (7, 7), padding='same', activation='relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        # model.add(Conv2D(32, (7, 7), padding='same', input_shape=self.state_size, activation='relu'))
+        # model.add(Conv2D(32, (7, 7), padding='same', activation='relu'))
+        # model.add(MaxPooling2D(pool_size=(2, 2)))
 
-        model.add(Conv2D(64, (5, 5), padding='same', input_shape=self.state_size, activation='relu'))
-        model.add(Conv2D(64, (5, 5), padding='same', activation='relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        # model.add(Conv2D(64, (5, 5), padding='same', input_shape=self.state_size, activation='relu'))
+        # model.add(Conv2D(64, (5, 5), padding='same', activation='relu'))
+        # model.add(MaxPooling2D(pool_size=(2, 2)))
 
-        model.add(Conv2D(64, (3, 3), padding='same', input_shape=self.state_size, activation='relu'))
-        model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        # model.add(Conv2D(64, (3, 3), padding='same', input_shape=self.state_size, activation='relu'))
+        # model.add(Conv2D(64, (3, 3), padding='same', activation='relu'())
+        # model.add(MaxPooling2D(pool_size=(2, 2)))
 
-        model.add(Conv2D(128, (3, 3), padding='same', input_shape=self.state_size, activation='relu'))
-        model.add(Conv2D(128, (3, 3), padding='same', activation='relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        # model.add(Conv2D(128, (3, 3), padding='same', input_shape=self.state_size, activation='relu'))
+        # model.add(Conv2D(128, (3, 3), padding='same', activation='relu'))
+        # model.add(MaxPooling2D(pool_size=(2, 2)))
 
-        model.add(Flatten())
-        model.add(Dense(512, activation='relu'))
+        # model.add(Flatten())
+        model.add(Dense(512, activation='relu', input_shape=(self.state_size,)))
         model.add(Dense(512, activation='relu'))
 
         model.add(Dense(self.action_size, activation='softmax'))
         model.compile(loss='categorical_crossentropy',
-                      optimizer=Adam(lr=self.learning_rate))
+                      optimizer=Adam(lr=self.alpha))
         model.summary()
         return model
 
