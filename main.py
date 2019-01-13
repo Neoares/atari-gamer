@@ -47,7 +47,7 @@ def train(env, agent, episodes):
     print(f"Results after {episodes} episodes:")
     print(f"Average timesteps per episode: {total_epochs / episodes}")
     print(f"Average penalties per episode: {total_penalties / episodes}")
-    plt.plot(range(episodes), total_score, 'bx')
+    plt.plot(range(episodes), [np.sum(total_score[0:i + 1]) / (i + 1) for i in range(len(total_score))], 'b')
     plt.show()
 
     # Close the env and write monitor result info to disk
@@ -107,7 +107,7 @@ def train_DQN(env, agent, episodes, render=False):
     print(f"Results after {episodes} episodes:")
     print(f"Average timesteps per episode: {total_epochs / episodes}")
     # print(f"Average penalties per episode: {total_penalties / episodes}")
-    plt.plot(range(episodes), total_score, 'bo')
+    plt.plot(range(episodes), [np.sum(total_score[0:i+1])/(i+1) for i in range(len(total_score))], 'b')
     plt.show()
 
     # Close the env and write monitor result info to disk
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     env = gym.make(args.env_id)
-    env.seed(42)
+    #env.seed(42)
     # agent = Agent(env.observation_space.n, env.action_space.n)
     agent = DQNAgent(env.observation_space.shape[0], env.action_space.n)
 
