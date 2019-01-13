@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from src.agent import Agent, DQNAgent
 
 
-def train(env, agent, episodes):
+def train(env, agent, episodes, render=False):
     total_epochs, total_penalties = 0, 0
 
     total_score = np.zeros(episodes)
@@ -18,15 +18,14 @@ def train(env, agent, episodes):
 
     for i in range(episodes):
         state = env.reset()
-        epochs, penalties = 0, 0
+        epochs = 0
         while True:
             epochs += 1
             action = agent.act(state)
             next_state, reward, done, _ = env.step(action)
-            if reward == -10:
-                penalties += 1
             agent.update_q_table(state, action, reward, next_state, done)
-            # env.render()
+            if render:
+                env.render()
             state = next_state
             total_score[i] += reward
 
@@ -40,13 +39,11 @@ def train(env, agent, episodes):
         agent.alpha = max(agent.alpha_min, agent.alpha - alpha_decay)
         agent.gamma = max(agent.gamma_min, agent.gamma - gamma_decay)
         total_epochs += epochs
-        total_penalties += penalties
 
     print("TOTAL SCORES:")
     print(total_score)
     print(f"Results after {episodes} episodes:")
     print(f"Average timesteps per episode: {total_epochs / episodes}")
-    print(f"Average penalties per episode: {total_penalties / episodes}")
     plt.plot(range(episodes), [np.sum(total_score[0:i + 1]) / (i + 1) for i in range(len(total_score))], 'b')
     plt.show()
 
@@ -69,20 +66,17 @@ def train_DQN(env, agent, episodes, render=False):
 
     for i in range(episodes):
         state = env.reset().reshape((1, agent.state_size))
-        epochs, penalties = 0, 0
+        epochs = 0
         while True:
             epochs += 1
             action = agent.act(state)
             next_state, reward, done, _ = env.step(action)
             next_state = next_state.reshape((1, agent.state_size))
 
-            # if reward == -10:
-                # penalties += 1
-            # agent.update_q_table(state, action, reward, next_state, done)
-
             agent.remember(state, action, reward, next_state, done)
             if render:
                 env.render()
+
             state = next_state
             total_score[i] += reward
 
@@ -97,7 +91,6 @@ def train_DQN(env, agent, episodes, render=False):
         agent.gamma = max(agent.gamma_min, agent.gamma - gamma_decay)
 
         total_epochs += epochs
-        # total_penalties += penalties
         # experience replay
         if len(agent.memory) > batch_size:
             agent.replay(batch_size)
@@ -106,7 +99,6 @@ def train_DQN(env, agent, episodes, render=False):
     print(total_score)
     print(f"Results after {episodes} episodes:")
     print(f"Average timesteps per episode: {total_epochs / episodes}")
-    # print(f"Average penalties per episode: {total_penalties / episodes}")
     plt.plot(range(episodes), [np.sum(total_score[0:i+1])/(i+1) for i in range(len(total_score))], 'b')
     plt.show()
 
@@ -126,7 +118,7 @@ if __name__ == '__main__':
     # agent = Agent(env.observation_space.n, env.action_space.n)
     agent = DQNAgent(env.observation_space.shape[0], env.action_space.n)
 
-    train_score = train_DQN(env, agent, 1000)
+    train_score = train_DQN(env, agent, 10)
     agent.prod = True
     test_score = train_DQN(env, agent, 100)
     print("Production algorithm mean:", test_score.mean())
