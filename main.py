@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from src.agent import Agent
+from src.util import window_average
 
 
 def train(env, agent, episodes, render=False):
@@ -46,7 +47,7 @@ def train(env, agent, episodes, render=False):
     print(total_score)
     print(f"Results after {episodes} episodes:")
     print(f"Average timesteps per episode: {total_epochs / episodes}")
-    plt.plot(range(episodes), [np.sum(total_score[0:i + 1]) / (i + 1) for i in range(len(total_score))], 'b')
+    plt.plot(range(episodes), window_average(total_score, window=100), 'b')
     plt.show()
 
     # Close the env and write monitor result info to disk
